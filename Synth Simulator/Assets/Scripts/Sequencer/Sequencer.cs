@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -49,7 +50,8 @@ public class Sequencer : MonoBehaviour
         if (positionInPattern >= 1f)
         {
             timeSinceStartOfPattern -= timePerPattern;
-            RebuildSchedule();
+            positionInPattern = timeSinceStartOfPattern / timePerPattern;
+            RebuildSchedule(true);
         }
         pointer.rectTransform.localPosition = pointerStartPos + new Vector3(rectTransform.rect.width*positionInPattern, 0f, 0f);
 
@@ -57,8 +59,8 @@ public class Sequencer : MonoBehaviour
         {
             if (positionInPattern >= schedule[0].schedulePosition) 
             {
+                print($"resolving {schedule[0].instruction} at {schedule[0].schedulePosition}");
                 ResolveInstruction(schedule[0]);
-                schedule.RemoveAt(0);
             }
         }
     }
@@ -73,9 +75,10 @@ public class Sequencer : MonoBehaviour
         {
             monosynth.NoteStop(i.instructionValue);
         }
+        schedule.Remove(i);
     }
 
-    public void RebuildSchedule()
+    public void RebuildSchedule(bool reset = false)
     {
         List<SequencerInstruction> temp_schedule = new List<SequencerInstruction>();
 
@@ -90,19 +93,19 @@ public class Sequencer : MonoBehaviour
             SequencerInstruction off = new SequencerInstruction();
             off.instruction = SequencerInstruction.InstructionType.NOTE_OFF;
             off.instructionValue = note.note;
-            off.schedulePosition = ((note.startPositionInPattern + 1) / 16f);
+            off.schedulePosition = ((note.startPositionInPattern + 0.99f) / 16f);
             temp_schedule.Add(off);
         }
         
         // only keep ones which have yet to come
         foreach (SequencerInstruction i in temp_schedule)
         {
-            if (i.schedulePosition >= timeSinceStartOfPattern)
+            if (i.schedulePosition >= positionInPattern || reset)
             {
                 schedule.Add(i);
             }
         }
-        schedule = schedule.OrderBy(p => p.schedulePosition).ToList();
+        schedule = schedule.OrderBy(p => p.schedulePosition).ThenBy(p => p.instructionValue).ToList();
     }
 }
 

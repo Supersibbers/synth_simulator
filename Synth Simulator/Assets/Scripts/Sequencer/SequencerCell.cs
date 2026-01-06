@@ -9,12 +9,12 @@ public class SequencerCell : MonoBehaviour, IPointerDownHandler
 
     private int row_note;
     public int positionInPattern;
-    private Sequencer parent;
+    private Sequencer sequencer;
 
     private void Start()
     {
         row_note = GetComponentInParent<SequencerRow>().note;
-        parent = GetComponentInParent<Sequencer>();
+        sequencer = GetComponentInParent<Sequencer>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -22,6 +22,6 @@ public class SequencerCell : MonoBehaviour, IPointerDownHandler
         SequencerNote new_note = Instantiate(prefab, this.transform);
         new_note.note = row_note;
         new_note.startPositionInPattern = positionInPattern;
-        parent.RebuildSchedule();
+        sequencer.RebuildSchedule();
     }
 }
