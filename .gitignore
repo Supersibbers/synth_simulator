@@ -1,3 +1,7 @@
 ﻿Synth Simulator/Library
 Synth Simulator/Logs
 Synth Simulator/UserSettings
+Synth Simulator/.vs
+Synth Simulator/PPv2URPConverters.csproj
+*.csproj
+Synth Simulator/Assets/_Recovery

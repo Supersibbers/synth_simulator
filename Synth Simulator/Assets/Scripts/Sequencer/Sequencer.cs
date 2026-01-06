@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,8 +21,8 @@ public class Sequencer : MonoBehaviour
     private float timePerBeat;
     private float timePerPattern;
     private float timeSinceStartOfPattern = 0.0f;
-    private float headerPosition = 0.0f;
     private float positionInPattern = 0.0f;
+    private float lastPosition = 0.0f;
 
     // instruction scheduling
     private List<SequencerInstruction> schedule;
@@ -46,21 +44,35 @@ public class Sequencer : MonoBehaviour
     {
         // passage of time
         timeSinceStartOfPattern += Time.deltaTime;
+
+        // store last position and calculate new position
+        lastPosition = positionInPattern;
         positionInPattern = timeSinceStartOfPattern / timePerPattern;
+
+        // resolve everything between last check and current check
+        ResolveRange(lastPosition, positionInPattern);
+
+        // wrap if at end
         if (positionInPattern >= 1f)
         {
             timeSinceStartOfPattern -= timePerPattern;
             positionInPattern = timeSinceStartOfPattern / timePerPattern;
-            RebuildSchedule(true);
-        }
-        pointer.rectTransform.localPosition = pointerStartPos + new Vector3(rectTransform.rect.width*positionInPattern, 0f, 0f);
 
-        if (schedule.Count > 0)
+            // catch any events at 0
+            ResolveRange(0, positionInPattern);
+        }
+        
+        // move pointer head
+        pointer.rectTransform.localPosition = pointerStartPos + new Vector3(rectTransform.rect.width * positionInPattern, 0f, 0f);
+    }
+
+    private void ResolveRange(float from, float to)
+    {
+        foreach (SequencerInstruction item in schedule)
         {
-            if (positionInPattern >= schedule[0].schedulePosition) 
+            if (from <= item.schedulePosition && item.schedulePosition < to)
             {
-                print($"resolving {schedule[0].instruction} at {schedule[0].schedulePosition}");
-                ResolveInstruction(schedule[0]);
+                ResolveInstruction(item);
             }
         }
     }
@@ -75,7 +87,6 @@ public class Sequencer : MonoBehaviour
         {
             monosynth.NoteStop(i.instructionValue);
         }
-        schedule.Remove(i);
     }
 
     public void RebuildSchedule(bool reset = false)
@@ -87,25 +98,16 @@ public class Sequencer : MonoBehaviour
             SequencerInstruction on = new SequencerInstruction();
             on.instruction = SequencerInstruction.InstructionType.NOTE_ON;
             on.instructionValue = note.note;
-            on.schedulePosition = (note.startPositionInPattern / 16f);
+            on.schedulePosition = (float)note.startPositionInPattern / patternLength;
             temp_schedule.Add(on);
 
             SequencerInstruction off = new SequencerInstruction();
             off.instruction = SequencerInstruction.InstructionType.NOTE_OFF;
             off.instructionValue = note.note;
-            off.schedulePosition = ((note.startPositionInPattern + 0.99f) / 16f);
+            off.schedulePosition = (float)(note.startPositionInPattern + 0.99f) / patternLength;
             temp_schedule.Add(off);
         }
-        
-        // only keep ones which have yet to come
-        foreach (SequencerInstruction i in temp_schedule)
-        {
-            if (i.schedulePosition >= positionInPattern || reset)
-            {
-                schedule.Add(i);
-            }
-        }
-        schedule = schedule.OrderBy(p => p.schedulePosition).ThenBy(p => p.instructionValue).ToList();
+        schedule = temp_schedule.OrderBy(p => p.schedulePosition).ThenBy(p => p.instructionValue).ToList();
     }
 }
 
