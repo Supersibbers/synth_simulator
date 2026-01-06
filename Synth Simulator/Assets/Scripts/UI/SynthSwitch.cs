@@ -14,7 +14,7 @@ public class SynthSwitch : UiControlBase
     protected int state;
     protected RectTransform rt;
 
-    protected void Start()
+    protected virtual void Start()
     {
         rt = GetComponent<RectTransform>();
         initial_position = rt.anchoredPosition;

@@ -21,11 +21,15 @@ public class MonosynthDispatcher : MonoBehaviour
         }
         keys = new List<SynthKey>(GetComponentsInChildren<SynthKey>());
 		held_notes = new List<SynthKey>();
+		last_human_pushed = keys[1];
     }
 
     private void Update()
     {
-		if (Input.GetMouseButtonUp(0)) { KeyReleased(last_human_pushed); }
+		if (Input.GetMouseButtonUp(0) && !last_human_pushed.transform.GetComponentInChildren<DraggableWeight>()) 
+		{ 
+			KeyReleased(last_human_pushed); 
+		}
     }
 
     public void KeyPressed(SynthKey key, bool human_pushed = false)
@@ -85,4 +89,3 @@ public class MonosynthDispatcher : MonoBehaviour
 		pdPatch.SendBang("triggeroff");		
 	}
 }
-

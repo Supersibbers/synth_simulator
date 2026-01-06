@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SynthKey : UiControlBase
+public class SynthKey : UiControlBase, IDropHandler
 {
     public int note;
 
@@ -55,5 +55,16 @@ public class SynthKey : UiControlBase
     public void KeyUp()
     {
         dispatcher.KeyReleased(this);
+    }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        GameObject dropped = eventData.pointerDrag;
+        DraggableWeight weight = dropped.GetComponent<DraggableWeight>();
+        if (weight != null)
+        {
+            weight.parentAfterDrag = transform;
+            KeyDown();
+        }
     }
 }

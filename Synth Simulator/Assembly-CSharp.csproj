@@ -61,13 +61,20 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\SynthSwitch.cs" />
+    <Compile Include="Assets\Scripts\Sequencer\SequencerCell.cs" />
+    <Compile Include="Assets\Scripts\UI\SynthKey.cs" />
+    <Compile Include="Assets\Scripts\UI\UiControlBase.cs" />
+    <Compile Include="Assets\Scripts\UI\SynthSwitch.cs" />
+    <Compile Include="Assets\Scripts\Sequencer\SequencerNote.cs" />
+    <Compile Include="Assets\Scripts\Sequencer\SequencerRow.cs" />
+    <Compile Include="Assets\Scripts\UI\SynthKnob.cs" />
+    <Compile Include="Assets\Scripts\UI\SynthSlider.cs" />
+    <Compile Include="Assets\Scripts\InstrumentController.cs" />
     <Compile Include="Assets\Scripts\LibPdInstance.cs" />
-    <Compile Include="Assets\Scripts\SynthKey.cs" />
-    <Compile Include="Assets\Scripts\UIControlBase.cs" />
-    <Compile Include="Assets\Scripts\SynthKnob.cs" />
-    <Compile Include="Assets\Scripts\SynthSlider.cs" />
-    <Compile Include="Assets\Scripts\PdDispatcher.cs" />
+    <Compile Include="Assets\Scripts\Sequencer\Sequencer.cs" />
+    <Compile Include="Assets\Scripts\Monosynth\MonosynthDispatcher.cs" />
+    <Compile Include="Assets\Scripts\Monosynth\MonosynthController.cs" />
+    <Compile Include="Assets\Scripts\DraggableWeight.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
